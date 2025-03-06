@@ -57,6 +57,6 @@ curl -X GET http://localhost:8080/api/v1/github/octocat
 ```
 
 ## Author
-Hubert Janiuk
-Email: hubert.janiuk.2ti@gmail.com
-GitHub: https://github.com/jania1857
+- Hubert Janiuk
+- Email: hubert.janiuk.2ti@gmail.com
+- GitHub: https://github.com/jania1857

@@ -19,7 +19,7 @@ public class GitHubService {
         return gitHubClient.getRepositories(user)
                 .onItem().transformToUni(repos -> {
                     if (repos == null || repos.isEmpty()) {
-                        throw new WebApplicationException("User not found", 404);
+                        return null;
                     }
                     List<GitHubRepo> nonForkRepos = repos.stream()
                             .filter(repo -> !repo.fork)
@@ -34,10 +34,13 @@ public class GitHubService {
                                     branches
                             ))).toList();
 
+
+
                     return Uni.combine().all().unis(responseUnis)
                             .with(responses -> responses.stream()
                                     .map(response -> (RepositoryResponse) response)
                                     .toList());
-                });
+                })
+                .onFailure();
     }
 }

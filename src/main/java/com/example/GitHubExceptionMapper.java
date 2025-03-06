@@ -11,6 +11,16 @@ import java.util.Map;
 public class GitHubExceptionMapper implements ExceptionMapper<WebApplicationException> {
     @Override
     public Response toResponse(WebApplicationException exception) {
+        if (exception.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(Map.of(
+                            "status", exception.getResponse().getStatus(),
+                            "message", "User with provided login not found."
+                    ))
+                    .build();
+        }
+
         return Response
                 .status(exception.getResponse().getStatus())
                 .entity(Map.of(

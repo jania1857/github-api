@@ -40,7 +40,6 @@ public class GitHubService {
                             .with(responses -> responses.stream()
                                     .map(response -> (RepositoryResponse) response)
                                     .toList());
-                })
-                .onFailure();
+                });
     }
 }

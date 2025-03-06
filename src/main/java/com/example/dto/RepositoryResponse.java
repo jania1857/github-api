@@ -5,7 +5,7 @@ import java.util.List;
 public class RepositoryResponse {
     public String repositoryName;
     public String ownerLogin;
-    public List<GitHubBranch> branches;
+    public List<GitHubBranchResponse> branches;
 
     public RepositoryResponse(
             String repositoryName,
@@ -14,6 +14,6 @@ public class RepositoryResponse {
     ) {
         this.repositoryName = repositoryName;
         this.ownerLogin = ownerLogin;
-        this.branches = branches;
+        this.branches = branches.stream().map(GitHubBranchResponse::new).toList();
     }
 }

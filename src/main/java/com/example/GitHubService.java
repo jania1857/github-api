@@ -16,30 +16,33 @@ public class GitHubService {
     GitHubClient gitHubClient;
 
     public Uni<List<RepositoryResponse>> getNonForkRepositories(String user) {
-        return gitHubClient.getRepositories(user)
-                .onItem().transformToUni(repos -> {
-                    if (repos == null || repos.isEmpty()) {
-                        return null;
-                    }
-                    List<GitHubRepo> nonForkRepos = repos.stream()
-                            .filter(repo -> !repo.fork)
-                            .toList();
+        return
+                // fetch data
+                gitHubClient.getRepositories(user)
+                        .onItem().transformToUni(repos -> {
+                            if (repos == null || repos.isEmpty()) {
+                                return null;
+                            }
+                            // filter from forks
+                            List<GitHubRepo> nonForkRepos = repos.stream()
+                                    .filter(repo -> !repo.fork)
+                                    .toList();
 
-                    List<Uni<RepositoryResponse>> responseUnis = nonForkRepos.stream()
-                            .map(repo -> gitHubClient.getBranches(
-                                    repo.owner.login, repo.name
-                            ).onItem().transform(branches -> new RepositoryResponse(
-                                    repo.name,
-                                    repo.owner.login,
-                                    branches
-                            ))).toList();
+                            // transform to unis
+                            List<Uni<RepositoryResponse>> responseUnis = nonForkRepos.stream()
+                                    .map(repo -> gitHubClient.getBranches(
+                                            repo.owner.login, repo.name
+                                    ).onItem().transform(branches -> new RepositoryResponse(
+                                            repo.name,
+                                            repo.owner.login,
+                                            branches
+                                    ))).toList();
 
-
-
-                    return Uni.combine().all().unis(responseUnis)
-                            .with(responses -> responses.stream()
-                                    .map(response -> (RepositoryResponse) response)
-                                    .toList());
-                });
+                            // merge list of unis into single uni
+                            return Uni.combine().all().unis(responseUnis)
+                                    .with(responses -> responses.stream()
+                                            .map(response -> (RepositoryResponse) response)
+                                            .toList());
+                        });
     }
 }

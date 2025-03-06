@@ -11,7 +11,9 @@ import java.util.Map;
 public class GitHubExceptionMapper implements ExceptionMapper<WebApplicationException> {
     @Override
     public Response toResponse(WebApplicationException exception) {
+        // catch exception throw when github API returns 404
         if (exception.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+            // return 404 instead of default 500 with message why it fault
             return Response
                     .status(Response.Status.NOT_FOUND)
                     .entity(Map.of(
@@ -21,6 +23,7 @@ public class GitHubExceptionMapper implements ExceptionMapper<WebApplicationExce
                     .build();
         }
 
+        // default case - fetch error status code and message
         return Response
                 .status(exception.getResponse().getStatus())
                 .entity(Map.of(
